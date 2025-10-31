@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => MyAppState(), // app-wide state
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
@@ -26,16 +26,40 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+
+  void getNext() {
+    // 1. reassigns 'current' state with another random word
+    current = WordPair.random();
+
+    // 2. a method of ChangeNotifier, ensuring that anyone watching MyAppState is notified.
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
+  // Every widget defines a build() method which automatically called every time
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
+    // Every build() method must return a widget or (more typically) a nested tree of widgets
     return Scaffold(
       body: Column(
-        children: [Text('A random AWESOME idea ? :'), Text(appState.current.asLowerCase)],
+        children: [
+          Text('A random AWESOME idea ? :'),
+          Text(appState.current.asLowerCase), // youthchart
+          Text(appState.current.asPascalCase), // YouthChart
+          Text(appState.current.asSnakeCase), // youth_chart
+
+          ElevatedButton(
+            onPressed: () {
+              appState.getNext(); // get new state (current)
+
+              print('button pressed!'); // debug message
+            },
+            child: Text('This is a button !'),
+          ),
+        ],
       ),
     );
   }
