@@ -40,6 +40,17 @@ class MyAppState extends ChangeNotifier {
     // 2. a method of ChangeNotifier, ensuring that anyone watching MyAppState is notified.
     notifyListeners();
   }
+
+  var favorites = <WordPair>[];
+
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatelessWidget {
@@ -48,6 +59,13 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
+
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
 
     // Every build() method must return a widget or (more typically) a nested tree of widgets
     return Scaffold(
@@ -67,13 +85,26 @@ class MyHomePage extends StatelessWidget {
             // It's commonly used to create visual "gaps"
             SizedBox(height: 100),
 
-            ElevatedButton(
-              onPressed: () {
-                appState.getNext(); // get new state (current)
-
-                print('button pressed!'); // debug message
-              },
-              child: Text('This is a button !'),
+            Row(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                    print('like button pressed'); // debug message
+                  },
+                  icon: Icon(icon),
+                  label: Text('like button'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    appState.getNext(); // get new state (current)
+                    print('next button pressed'); // debug message
+                  },
+                  child: Text('next button'),
+                ),
+              ],
             ),
           ],
         ),
